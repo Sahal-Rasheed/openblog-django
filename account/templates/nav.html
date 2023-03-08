@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+      <!-- Toggle button -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-mdb-toggle="collapse"
+        data-mdb-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+  
+      <!-- Collapsible wrapper -->
+      <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
+        <!-- Navbar brand -->
+
+        <a href="{% url 'home' %}" style="text-decoration: none ; color:black;"><h3 class="mt-2 font-weight-bold">Open Blog</h3></a>
+        <!-- <a class="navbar-brand mt-2 mt-lg-0" href="#">
+          <img
+            src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp"
+            height="15"
+            alt="MDB Logo"
+            loading="lazy"
+          />
+        </a> -->
+        <!-- Left links -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-2 font-weight-bold">
+          {% if request.user.is_authenticated %}
+            {% if request.user.p_user %}
+          <a class="navbar-brand" href="{% url 'user_profile' %}"><img src="{{request.user.p_user.profile_pic.url}}" class="img-fluid d-inline-block align-top rounded-circle" width="30" height="30"  alt=""></a>
+            {% else %}
+          <a class="navbar-brand" href="#"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="img-fluid d-inline-block align-top rounded-circle" width="30" height="30"  alt=""></a>
+            {% endif %}
+          <li class="nav-item mt-2 text-info">
+            <u> Welcome {{request.user.first_name}} , </u>  
+          </li>
+            {% if 'userprofile' in request.path %}
+          <div></div>
+            {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user_profile' %}">Profile</a>     
+          </li>
+            {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'my_blogs' %}">My Blogs</a>
+            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Registration</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Registration</a>
+          </li>
+          {% endif %}
+        </ul>
+        <!-- Left links -->
+      </div>
+      <!-- Collapsible wrapper -->
+  
+      <!-- Right elements -->
+      <!-- <div class="d-flex align-items-center"> -->
+        <!-- Icon -->
+        <!-- <a class="text-reset me-3" href="#">
+          <i class="fas fa-shopping-cart"></i>
+        </a> -->
+  
+        
+        <!-- Avatar -->
+        <!-- <div class="dropdown">
+          <a
+            class="dropdown-toggle d-flex align-items-center hidden-arrow"
+            href="#"
+            id="navbarDropdownMenuAvatar"
+            role="button"
+            data-mdb-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+              class="rounded-circle"
+              height="25"
+              alt="Black and White Portrait of a Man"
+              loading="lazy"
+            />
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="navbarDropdownMenuAvatar"
+          >
+            <li>
+              <a class="dropdown-item" href="#">My profile</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">Settings</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">Logout</a>
+            </li>
+          </ul>
+        </div> -->
+      </div>
+      <!-- Right elements -->
+      
+    </div>
+    
+    <!-- Container wrapper -->
+  </nav>
+  <!-- Navbar -->
+  <hr>
+      
+{% block content %}
+{% endblock content %}
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>

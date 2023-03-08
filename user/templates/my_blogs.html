@@ -1,0 +1,86 @@
+{% extends 'nav.html' %}
+
+{% block content %}
+
+<h4 class="ml-4">My Blogs</h4>
+<!-- <div>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{message}}</strong>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{message}}</strong>
+                </div>
+            {% else %}
+            <div></div>
+            {% endif%}
+        {% endfor %}
+    {% endif %}
+</div> -->
+<hr>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            {% if data %}
+            {% for i in data %}
+            <div class="card">
+                <div class="card-header">
+                 <h4>{{i.title}}</h4>
+                </div>
+                {% if i.image.url %}
+                <img class="card-img-top mx-auto d-block mt-4" src="{{i.image.url}}" alt="Card image cap" style="height: 200px;width:90%;">
+                {% endif %}
+                <div class="card-body ">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="card-title"><i class="fa fa-calendar" aria-hidden="true"></i> {{i.date}}</h5>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <a href="{% url 'update_blog' i.pk %}" class="btn btn-primary mr-3"><i class="fa fa-edit" aria-hidden="true"></i> Edit Blog</a> 
+                                <a href="{% url 'delete_blog' i.pk %}" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete Blog</a>
+                            </div>
+                        </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{i.description}}</li>
+                </ul>
+                <!-- <div class="card-footer">
+                    <a href="#" class="btn btn-primary">Edit Blog</a>
+                    <a href="#" class="btn btn-danger">Delete Blog</a>
+                </div> -->
+            </div>
+            <br>
+            {% endfor %}
+            <hr>
+            {% else %}
+            <div class="text-center container mt-4">
+                <h4>You have posted no blogs yet!</h4>
+            </div>
+            {% endif %}
+     
+            
+            
+        </div>
+        <!-- {% if request.user.is_authenticated %}
+        <div class="col-4 mr-0" style="border-left: 1px solid black;">
+            <h5><u>Add new blog</u></h5> 
+            <br>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+                <br>
+                <a href="#"><button class="btn btn-primary">Add Blog</button></a>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div> -->
+
+
+{% endblock content %}

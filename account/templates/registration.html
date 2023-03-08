@@ -1,0 +1,47 @@
+{% extends 'nav.html' %}
+
+{% block content %}
+
+  
+<div class="container-fluid table-bordered col-md-6 mt-3">
+    <br>
+    <div class="bg-dark" style="height: 65px;"> 
+      <h2 class="text-light text-center pt-2">Registration</h2>
+    </div>
+          {% if messages %}
+          {% for message in messages %}
+              {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} <!-- checking type of message and showing the message (sussces ,
+                  warning etc) | message.level == DEFAULT_MESSAGE_LEVELS.error_type -->
+                  <div class="alert alert-success alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <strong>{{message}}</strong>
+                  </div>
+              {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                  <div class="alert alert-danger alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <strong>{{message}}</strong>
+                  </div>
+              {% else %}
+              <div></div>
+              {% endif%}
+          {% endfor %}
+          {% endif %}
+      <form action="" method="post">
+        {% csrf_token %}
+        <br>
+        <!-- <label> Firstname </label><input type="text" class="form-control" placeholder="Firstname" name="fname"><br>
+        <label> Lastname </label><input type="text" class="form-control" placeholder="Lastname" name="lname"><br>
+        <label> Username </label><input type="text" class="form-control" placeholder="Username" name="uname"><br>
+        <label> Email </label><input type="email" class="form-control" placeholder="Email" name="email"><br>
+        <label> Password </label><input type="password" class="form-control" placeholder="Password" name="pass"><br><br> -->
+        
+          {{form.as_p}}
+
+         <input type="submit" value="Register" class="form-controls btn btn-block btn-success mb-4 "> 
+
+
+      </form>
+  </div>
+
+
+{% endblock content %}

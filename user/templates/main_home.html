@@ -1,0 +1,191 @@
+{% extends 'nav.html' %}
+
+{% block content %}
+
+<h4 class="ml-4">Home</h4>
+<div>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{message}}</strong>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{message}}</strong>
+                </div>
+            {% else %}
+            <div></div>
+            {% endif%}
+        {% endfor %}
+    {% endif %}
+</div>
+<hr>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="{% if request.user.is_authenticated %} col-8 {% else %} col-12 {% endif %}">
+            <h5><u>Blogs</u></h5> 
+            {% for i in data %}
+
+            <div class="card">
+                <div class="card-header">
+                 <h4>{{i.title}}</h4>
+                </div>
+                {% if i.image.url %}
+                <img class="card-img-top mx-auto d-block mt-4" src="{{i.image.url}}" alt="Card image cap" style="height: 200px;width:90%;">
+                {% endif %}
+                <div class="card-body d-flex justify-content-between">
+                  {% if i.user == request.user %}
+                  <h5><i class="fa fa-user-circle-o"></i> You</h5>
+                  {% else %}
+                  <h5><i class="fa fa-user-circle-o"></i> {{i.user.first_name|capfirst}} {{i.user.last_name|capfirst}}</h5>
+                  {% endif %}
+                  <h5 class="card-title"><i class="fa fa-calendar" aria-hidden="true"></i> {{i.date}}</h5>
+                  <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{i.description}}</li>
+                </ul>
+                <div class="footer">
+                    <div class="d-flex justify-content-start">
+                        {% if request.user in i.like  %} 
+                        <a href="{% url 'removelike' i.id %}" class="mt-2 ml-3 mb-1"><i class="text-danger fa fa-heart fa-lg" aria-hidden="true"></i></a>
+                            {% else %}
+                        <a href="{% url 'addlike' i.id %}" class="mt-2 ml-3 mb-1"><i class="text-dark fa fa-heart-o fa-lg" aria-hidden="true"></i></a>
+                            {% endif %}
+                        <button class="btn ml-2 mb-1" type="button" data-toggle="collapse" data-target="#collapseExample{{i.id}}" aria-expanded="false" aria-controls="collapseExample{{i.id}}">
+                            <i class="fa fa-comment-o fa-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div>
+
+                        {% if i.like.count == 2 and request.user.username in i.liked_users %}
+                            <p class="ml-3 mb-1">Liked by <b>you</b> and <b>{{i.like.last}}</b></p>
+                        {% elif i.like.count >= 3 %}
+                                <div class="dropdown">
+                                    <span class="ml-3 mb-1">Liked by <b>{{i.like.first}}</b> and <b>{{i.like_count}}</b></span> 
+                                    <span type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <b>others</b>
+                                    </span>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                        {% for liked_user in i.liked_users %}
+                                            <li class="dropdown-item"><b>{{liked_user}}</b></li>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                        {% endif %}
+
+                        {% for liked_user in i.liked_users %}
+                            {% if i.like.count == 1 and liked_user == request.user.username %}
+                                <p class="ml-3 mb-1">Liked by <b>you</b> only</p>
+                            {% elif i.like.count == 1 %}
+                                <p class="ml-3 mb-1">Liked by <b>{{liked_user}}</b> only</p>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                    <div class="collapse mt-3" id="collapseExample{{i.id}}">
+                        <div>
+                            <h5 class="text-secondary ml-3 mb-2">Comments</h5>
+                            {% for comment in comments %}
+                            {% if comment.blog.id == i.id %}
+                            <div class="card">
+                                <div class="card card-body" style="border: none;">
+                                    <div class="row">
+                                        <div class="col-md-6 d-flex justify-content-start">
+                                            <img src="{{comment.user.p_user.profile_pic.url}}" width="25" height="25" style="border-radius: 50%;">   
+                                            <p class="ml-2"><b>{{comment.user.first_name}} {{comment.user.last_name}}</b></p>
+                                            <p class="ml-2">{{comment.comment}}</p>
+                                        </div>
+                                        <div class="col-md-6 d-flex justify-content-end">
+                                            <p>{{comment.date}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                       </div>
+                      <div class="card card-body">
+                            <form action="{% url 'comment' i.id %}" method="post">
+                                {% csrf_token %}
+                                {{comment_form.as_p}}
+                                <div>
+                                    <button class="btn btn-primary">Comment</button>
+                                </div>
+                            </form>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            {% endfor %}
+     
+            <hr>
+            
+        </div>
+        {% if request.user.is_authenticated %}
+        <div class="col-4 mr-0" style="border-left: 1px solid black;">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapseExample">
+                Add New Blog
+              </button>
+            <div class="collapse" id="collapse">
+              <div class="card card-body">
+                <!-- <h5><u>Add new blog</u></h5>  -->
+                 <!-- <br> -->
+                <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+                <br>
+                <a href="#"><button class="btn btn-primary">Add Blog</button></a>
+                </form>
+              </div>
+            </div>
+            <hr>
+            <div class="mt-1">
+                <h4> <i class="fa fa-search text-info"></i> Discover People</h4>
+                <hr>
+                {% for user in users %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-start">
+                                    {% if user.p_user.profile_pic.url %}
+                                    <img src="{{user.p_user.profile_pic.url}}" style="border-radius: 50%;" width="35" height="35">
+                                    {% else %}
+                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" width="35" height="35"style="border-radius: 50%;">
+                                    {% endif %}
+                                    <h6 class="ml-3 mt-2">{{user.first_name|capfirst}} {{user.last_name|capfirst}}</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-end">
+                      
+                                    {% if request.user.follower.all == user %}
+                                    <a href="" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i>&emsp13;Followed</a>
+                                    {% else %}
+                                    <a href="{% url 'follow' user.id %}" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i>&emsp13;&emsp13;Follow</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                      
+                        
+                      
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+        </div>
+ 
+        {% endif %}
+
+    </div>
+</div>
+
+
+{% endblock content %}
