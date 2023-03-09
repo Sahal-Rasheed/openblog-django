@@ -5,10 +5,10 @@ from .forms import RegisterForm,LoginForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
+from django.core.mail import send_mail
+from django.conf import settings
 # Create your views here.
 # Create your views here.
-
-
 
 # Register View Simplified using Inheriting CreateView - ClassBasedView - Advanced ....   
 class RegView(CreateView):
@@ -16,6 +16,17 @@ class RegView(CreateView):
     form_class = RegisterForm
     model = User
     success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        send_mail(
+        'Open Blog',
+        'Thanks for registering with us .',
+        settings.EMAIL_HOST_USER,
+        [form.cleaned_data.get('email')],
+        )
+        messages.success(self.request, "User Registration Successfull!")
+        self.object = form.save()
+        return super().form_valid(form)
 
 # Register View using Inheriting View - ClassBasedView - Basic ....   
 # class RegView(View):

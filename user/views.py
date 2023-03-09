@@ -6,10 +6,20 @@ from django.contrib.auth import authenticate,logout
 from django.contrib import messages
 from .forms import UserProfileForm,ChangePasswordForm,BlogForm,CommentForm
 from account.models import UserProfile,Blogs,Comments,Followers
+from django.utils.decorators import method_decorator
+
+def signin_required(func):
+    def wrapper(request,*args,**kwargs):
+        if request.user.is_authenticated:
+            return func(request,*args,**kwargs)
+        else:
+            return redirect('login')
+    return wrapper  
 
 # Create your views here.
 
 # Viewing home_page using TemplateView - [no need of get func.] - simplified
+@method_decorator(signin_required,name='dispatch')
 class HomeView(CreateView):
     form_class = BlogForm
     model = Blogs
@@ -24,25 +34,20 @@ class HomeView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        following = Followers.objects.filter(follower=self.request.user).values_list('following',flat=True)
+        lists = list(following)
+        lists.append(self.request.user.id)
+        print(lists)
 
-        # if self.request.id ==  
+        context['data'] = Blogs.objects.filter(user_id__in=lists).order_by('user')
+        context['following_users'] = User.objects.filter(id__in=following)
         context['users'] = User.objects.all().exclude(username=self.request.user.username)
-        context['data'] = Blogs.objects.all().order_by('-date')
         context['comment_form'] = CommentForm() # comment form context to pass to front end
         context['comments'] = Comments.objects.all() # comments obj context to pass to front end
-        
-        # blogs=Blogs.objects.filter(user_id=self.request.user.id)
-        # for x in blogs:
-        #     blog_id = x.id
-        #     blog_s=Blogs.objects.get(id=blog_id)
-        # is_liked=blog_s.liked_by.filter(id=self.request.user.id).exists()
-
-
-        # context['is_liked'] = is_liked
-        # print(is_liked)
-    
         return context
-    
+
+@method_decorator(signin_required,name='dispatch')
 class MyBlogs(TemplateView):
     template_name = 'my_blogs.html'
 
@@ -51,12 +56,8 @@ class MyBlogs(TemplateView):
         context['data'] = Blogs.objects.filter(user=self.request.user).order_by('-date')
         return context
 
-# Viewing home_page using normal View method - [using get func.]
-# class HomeView(View):
-#     def get(self,request,*args,**kwrags):
-#         return render(request, 'main_home.html')
-
 # Update Blog Using UpdateView
+@method_decorator(signin_required,name='dispatch')
 class UpdateBlog(UpdateView):
     form_class = BlogForm
     model = Blogs
@@ -64,14 +65,28 @@ class UpdateBlog(UpdateView):
     success_url = reverse_lazy('my_blogs')
 
 # Delete Blog Using DeleteView
+@method_decorator(signin_required,name='dispatch')
 class DeleteBlog(DeleteView):
     model = Blogs
     template_name = 'delete_blog.html'
     success_url = reverse_lazy('my_blogs')
 
+@method_decorator(signin_required,name='dispatch')
 class NUserProfile(TemplateView):
     template_name = 'userprofile.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['blog_count'] = Blogs.objects.filter(user=self.request.user).count()
+
+        following = Followers.objects.filter(follower=self.request.user).values('following')
+        context['following_users_count'] = User.objects.filter(id__in=following).count()
+
+        follower = Followers.objects.filter(following=self.request.user).values('follower')
+        context['follower_users_count'] = User.objects.filter(id__in=follower).count()
+        return context
+
+@method_decorator(signin_required,name='dispatch')
 class AddProfile(CreateView):
     form_class = UserProfileForm
     model = UserProfile
@@ -95,6 +110,7 @@ class AddProfile(CreateView):
     #     else:
     #         return render(request,'userprofile.html',{'form':form})
 
+@method_decorator(signin_required,name='dispatch')
 class ChangePassword(FormView):
     template_name = 'change_password.html'
     form_class = ChangePasswordForm
@@ -119,6 +135,7 @@ class ChangePassword(FormView):
             messages.error(request,'Old password was invalid')
             return redirect('change_password')
 
+@method_decorator(signin_required,name='dispatch')
 class UpdateProfile(View):
     def get(self,request,*args,**kwargs):
         id = kwargs.get("id")
@@ -146,28 +163,21 @@ def AddComments(request,bid):
 def AddLike(request,id):
     blog = Blogs.objects.get(id=id)
     blog.liked_by.add(request.user)
-    user=request.user
-    u=user.following
-    print(u)
-
     blog.save()
     return redirect('home')
 
 def RemoveLike(request,id):
     blog = Blogs.objects.get(id=id)
     blog.liked_by.remove(request.user)
-    is_liked=blog.liked_by.all()
-    print(is_liked)
     blog.save()
     return redirect('home')
 
 def Follow(request,id):
     if Followers.objects.filter(follower=request.user.id , following=id).exists():
-        followObj = Followers.objects.filter(follower=request.user.id , following=id).exists()
+        followObj = Followers.objects.filter(follower=request.user.id , following=id)
         followObj.delete()
     else:
-        user = User.objects.get(id=id)
-        
+        user = User.objects.get(id=id)  
         followObj = Followers.objects.create(follower=request.user , following=user) 
         followObj.save()   
     return redirect('home')

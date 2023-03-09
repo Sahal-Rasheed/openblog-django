@@ -32,7 +32,6 @@ class RegisterForm(UserCreationForm):
             'username' : forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your User Name'}),
             'email' : forms.EmailInput(attrs={'class':'form-control', 'placeholder':'Enter your Email'}),
            
-
         }
 
 class LoginForm(forms.Form):

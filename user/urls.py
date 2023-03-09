@@ -15,9 +15,4 @@ urlpatterns = [
     path('remove_like/<int:id>', RemoveLike, name='removelike'),
     path('follow/<int:id>', Follow, name='follow'),
 
-
-
-
-
-
 ]

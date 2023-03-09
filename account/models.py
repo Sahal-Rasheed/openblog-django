@@ -51,10 +51,4 @@ class Followers(models.Model):
     follower        =   models.ForeignKey(User,on_delete=models.CASCADE,related_name='follower',null=True) # who follow us
     following       =   models.ForeignKey(User,on_delete=models.CASCADE,related_name='following',null=True) # whom we follow
 
-    def __str__(self):
-        return self.following.username
-
-    @property
-    def fun(self):
-        print(self.following)
-        return self.following.all()
+ 

@@ -6,6 +6,14 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         exclude = ['user']
 
+        widgets = {
+            'age' :forms.TextInput(attrs={'class':'form-control','placeholder':'Enter your age'}),
+            'gender' : forms.Select(attrs={'class':'form-control',}),
+            'phone' : forms.NumberInput(attrs={'class':'form-control','placeholder':'Enter your phone number'}),
+            'profile_pic' : forms.FileInput()
+
+        }
+
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(max_length=20,label="Old Password",widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Enter Old Password'}))
     new_password = forms.CharField(max_length=20,label="New Password",widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Enter New Password'}))
