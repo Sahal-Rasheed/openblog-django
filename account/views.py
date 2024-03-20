@@ -18,12 +18,12 @@ class RegView(CreateView):
     success_url = reverse_lazy('login')
 
     def form_valid(self, form):
-        send_mail(
-        'Open Blog',
-        'Thanks for registering with us .',
-        settings.EMAIL_HOST_USER,
-        [form.cleaned_data.get('email')],
-        )
+        #send_mail(
+        #'Open Blog',
+        #'Thanks for registering with us .',
+        #settings.EMAIL_HOST_USER,
+        #[form.cleaned_data.get('email')],
+        #)
         messages.success(self.request, "User Registration Successfull!")
         self.object = form.save()
         return super().form_valid(form)
